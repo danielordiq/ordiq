@@ -1,0 +1,8 @@
+{
+  "Recruitment_CVs": {
+    "purpose": "Automated CV screening",
+    "tier": "High",
+    "article_refs": ["Art6", "AnnexIII-2(a)"],
+    "obligations": ["DataGovernance", "HumanOversight", "PostMarketMonitor", "CE_Mark"]
+  }
+}
