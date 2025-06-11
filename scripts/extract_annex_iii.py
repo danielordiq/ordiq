@@ -1,7 +1,7 @@
 
 import tabula, pandas as pd, pathlib, subprocess, os
 
-PDF = "docs/raw/scripts/EUAIACTconsolidated.pdf"   # corrected file path
+PDF = "docs/raw/EUAIACTconsolidated.pdf"   # corrected file path
 OUT = "docs/raw/annex_iii.csv"                     # where we'll save
 
 # 1️⃣ read pages 120-122 into a list of DataFrames
