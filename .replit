@@ -2,6 +2,7 @@ modules = ["nodejs-20", "python-3.11"]
 run = "cd apps/web && npm run dev"
 [nix]
 channel = "stable-24_05"
+packages = ["openjdk19"]
 
 [deployment]
 run = ["sh", "-c", "cd apps/web && npm run dev"]
