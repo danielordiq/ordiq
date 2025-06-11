@@ -1,7 +1,7 @@
 
 import tabula, pandas as pd, pathlib, subprocess, os
 
-PDF = "docs/raw/EUAIACTconsolidated.pdf"   # corrected file path
+PDF = "docs/raw/scripts/EUAIACTconsolidated.pdf"   # corrected file path
 OUT = "docs/raw/annex_iii.csv"                     # where we'll save
 
 try:
