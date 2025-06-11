@@ -1,12 +1,13 @@
+
 import tabula, pandas as pd, pathlib, subprocess, os
 
-PDF = "docs/raw/EUAIACTconsolidated.pdf"   # your file
-OUT = "docs/raw/annex_iii.csv"             # where we’ll save
+PDF = "docs/raw/scripts/EUAIACTconsolidated.pdf"   # corrected file path
+OUT = "docs/raw/annex_iii.csv"                     # where we'll save
 
-# 1️⃣ read pages 127-129 into a list of DataFrames
+# 1️⃣ read pages 120-122 into a list of DataFrames
 dfs = tabula.read_pdf(
     PDF,
-    pages="127-129",
+    pages="120-122",       # updated page numbers
     multiple_tables=True,
     lattice=True,          # better at ruled tables
 )
