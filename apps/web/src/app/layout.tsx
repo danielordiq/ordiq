@@ -24,11 +24,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      // app/layout.tsx  (inside the <body>)
+      <body className="min-h-screen bg-gray-50 font-sans">
+        <header className="border-b bg-white">
+          <div className="max-w-6xl mx-auto p-4 flex justify-between">
+            <span className="font-bold">🛡 Guardrail AI</span>
+            {/* TODO: user avatar / plan info */}
+          </div>
+        </header>
+
+        <main className="max-w-6xl mx-auto p-6">
+          {children}
+        </main>
       </body>
+
     </html>
   );
 }
