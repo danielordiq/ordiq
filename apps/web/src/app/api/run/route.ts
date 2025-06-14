@@ -1,37 +1,38 @@
 // apps/web/src/app/api/run/route.ts
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import OpenAI           from 'openai';
 import { createClient } from '@supabase/supabase-js';
 
-import rulesJSON from '@/config/ai_act_v1.json';
+import rulesJSON from '@/config/ai_act_v1.json' assert { type: 'json' };
 
-/* ────────────────────────────────────────────────────────────
+/* ──────────────────────────────
    1 ▸ Types & data
-────────────────────────────────────────────────────────────── */
+─────────────────────────────── */
 type ActRule = {
   tier: 'High' | 'Medium' | 'Low';
   obligations: string[];
 };
 
-const rules: Record<string, ActRule> = rulesJSON;
+// cast once → strongly typed map
+const rules = rulesJSON as unknown as Record<string, ActRule>;
 
-/* ────────────────────────────────────────────────────────────
-   2 ▸ SDKs (env-driven, never hard-coded)
-────────────────────────────────────────────────────────────── */
+/* ──────────────────────────────
+   2 ▸ SDKs (env-driven)
+─────────────────────────────── */
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const supa   = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_ANON_KEY!
 );
 
-/* ────────────────────────────────────────────────────────────
+/* ──────────────────────────────
    3 ▸ Edge runtime
-────────────────────────────────────────────────────────────── */
+─────────────────────────────── */
 export const runtime = 'edge';
 
-/* ────────────────────────────────────────────────────────────
+/* ──────────────────────────────
    4 ▸ POST /api/run
-────────────────────────────────────────────────────────────── */
+─────────────────────────────── */
 export async function POST(req: Request) {
   try {
     /* ---------- read request ---------- */
