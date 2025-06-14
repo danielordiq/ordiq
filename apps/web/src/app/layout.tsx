@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full bg-gray-50 text-gray-900">
+      <body className="h-full bg-slate-50 text-gray-900">
         {/* ─ Header ─────────────────────────────── */}
         <header className="h-14 flex items-center justify-between border-b bg-white px-4 shadow-sm">
           <span className="font-semibold tracking-tight">ORDIQ&nbsp;AI</span>
