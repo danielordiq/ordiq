@@ -1,0 +1,3 @@
+requests
+reportlab
+wkhtmltopdf-binary==0.12.6        # <- real static binary
