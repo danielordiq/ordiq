@@ -2,3 +2,15 @@ modules = ["nodejs-20"]
 [nix]
 channel = "stable-24_05"
 packages = ["python312Packages.pip", "python3", "uv"]
+
+[workflows]
+runButton = "Run Web App"
+
+[[workflows.workflow]]
+name = "Run Web App"
+author = 43413430
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd apps/web && npm install && npm run dev"

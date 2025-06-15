@@ -1,3 +1,7 @@
-requests
-reportlab
-wkhtmltopdf-binary==0.12.6        # <- real static binary
+
+pdfplumber==0.10.0
+pandas==2.1.4
+requests==2.31.0
+openai==1.52.0
+supabase==2.8.1
+tabula-py==2.9.0
