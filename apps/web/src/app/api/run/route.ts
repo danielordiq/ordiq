@@ -46,20 +46,18 @@ export async function POST(req: Request) {
     `.trim();
 
     /* GPT expects the user message as a single JSON string */
-    const user = JSON.stringify(body);
+    const payloadStr = JSON.stringify(body); // ✨ rename
 
     /* ---------- call GPT-4o-mini ------ */
     const gpt = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: sys },
-        { role: "user", content: user },
+        { role: "user", content: payloadStr }, // ✨ rename
       ],
     });
 
-    //                !            !        !
     const chosenKey = gpt.choices[0]!.message!.content!.trim();
-
     const rule = rules[chosenKey];
 
     if (!rule) {
@@ -70,9 +68,9 @@ export async function POST(req: Request) {
     }
 
     /* ---------- store assessment ------ */
-    // ① fetch the signed-in user (returns null on anon requests)
+    // ① fetch the signed-in user (null on anon requests)
     const {
-      data: { user },
+      data: { user: authUser }, // ✨ rename
     } = await supa.auth.getUser();
 
     // ② insert the row, including user_id
@@ -80,7 +78,7 @@ export async function POST(req: Request) {
       request: body,
       matched_key: chosenKey,
       tier: rule.tier,
-      user_id: user?.id ?? null, // ❇️ <- NEW FIELD
+      user_id: authUser?.id ?? null, // ✨ uses renamed var
     });
 
     /* ---------- reply ----------------- */
