@@ -14,3 +14,5 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd apps/web && npm install && npm run dev"
+
+nixpkgs = ["wkhtmltopdf"]
