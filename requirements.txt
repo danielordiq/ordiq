@@ -1,3 +1,4 @@
 requests
 reportlab
 wkhtmltopdf==0.2      # optional – ships the static binary
+stripe==12.2.0
