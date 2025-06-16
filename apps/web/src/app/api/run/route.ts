@@ -70,10 +70,17 @@ export async function POST(req: Request) {
     }
 
     /* ---------- store assessment ------ */
+    // ① fetch the signed-in user (returns null on anon requests)
+    const {
+      data: { user },
+    } = await supa.auth.getUser();
+
+    // ② insert the row, including user_id
     await supa.from("assessments").insert({
       request: body,
       matched_key: chosenKey,
       tier: rule.tier,
+      user_id: user?.id ?? null, // ❇️ <- NEW FIELD
     });
 
     /* ---------- reply ----------------- */
