@@ -2,6 +2,10 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
+import Stripe from "stripe";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-04-10",
+});
 
 import rulesJSON from "@/config/ai_act_v1.json" assert { type: "json" };
 
@@ -26,9 +30,9 @@ const supa = createClient(
 );
 
 /* ──────────────────────────────
-   3 ▸ Edge runtime
+   3 ▸ Edge runtime (requirered for Stripe - changed)
 ─────────────────────────────── */
-export const runtime = "edge";
+export const runtime = "nodejs"; // ✅ Stripe SDK runs in Node
 
 /* ──────────────────────────────
    4 ▸ POST /api/run
@@ -80,6 +84,21 @@ export async function POST(req: Request) {
       tier: rule.tier,
       user_id: authUser?.id ?? null, // ✨ uses renamed var
     });
+
+    /* ---------- Stripe usage metering ---------- */
+    try {
+      await stripe.subscriptionItems.createUsageRecord(
+        process.env.STRIPE_AI_RUN_PRICE_ID!, // ⬅️ price-ID env-var
+        {
+          quantity: 1, // one run
+          timestamp: Math.floor(Date.now() / 1000), // now (UNIX seconds)
+          action: "increment",
+        },
+      );
+    } catch (err) {
+      console.error("stripe usage record failed", err);
+      // Optional: don’t block the request; we still return success to the user.
+    }
 
     /* ---------- reply ----------------- */
     return NextResponse.json({
