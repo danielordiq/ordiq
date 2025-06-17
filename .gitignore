@@ -136,3 +136,7 @@ dist
 .pnp.*
 parse_embed_act.ipynb
 uv.lock
+
+
+# Ignore generated PDF reports
+report.pdf
