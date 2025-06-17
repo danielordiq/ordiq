@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-04-10",
+  apiVersion: "2022-11-15", // stable, matches current typings
 });
 
 import rulesJSON from "@/config/ai_act_v1.json" assert { type: "json" };
