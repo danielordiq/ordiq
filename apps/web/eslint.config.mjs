@@ -1,25 +1,26 @@
-// apps/web/eslint.config.mjs
+/* apps/web/eslint.config.mjs
+   Flat-config, Tailwind CSS plugin, Next defaults + TypeScript */
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { FlatCompat } from "eslint/useFlatConfig";
-// --- NEW: Tailwind plugin import ------------------------------
+
+/* ❶ Flat-config helper – ESLint v8.57+ moved it to
+      “use-at-your-own-risk”.  Works both locally and on Vercel. */
+import { FlatCompat } from "eslint/use-at-your-own-risk/useFlatConfig";
+
+/* ❷ Tailwind CSS plugin */
 import tailwindcss from "eslint-plugin-tailwindcss";
-// --------------------------------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+const compat = new FlatCompat({ baseDirectory: __dirname });
 
 const eslintConfig = [
-  // Next-js defaults + TypeScript
+  /* Next.js defaults + TypeScript rules */
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 
-  // --- NEW: enable Tailwind’s recommended rule-set -------------
+  /* ❸ Enable Tailwind’s recommended rule-set */
   tailwindcss.configs.recommended,
-  // -------------------------------------------------------------
 ];
 
 export default eslintConfig;
