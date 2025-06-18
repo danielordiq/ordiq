@@ -28,3 +28,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
+
+<nav className="space-y-2">
+  <Link className="block hover:underline" href="/wizard">
+    Run
+  </Link>
+  <Link className="block hover:underline" href="/registry">
+    Registry
+  </Link>
+</nav>;
