@@ -1,7 +1,7 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 "use client";
 
-import { jsonPatch } from "fast-json-patch";
-import clsx from "clsx";
+import { compare as jsonCompare } from "fast-json-patch";     // ✅ correct helper
 import { twMerge } from "tailwind-merge";
 import { useEffect, useState } from "react";
 import {
@@ -11,7 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import type { Database } from "@/lib/supa"; // adapt if you use a different file
+import type { Database } from "@/lib/supa";                    // keep your type
 
 type Row = Database["public"]["Tables"]["assessments"]["Row"];
 
@@ -99,7 +99,7 @@ function DiffDrawer({ row, onClose }: { row: Row; onClose: () => void }) {
 
   if (!prev) return null;
 
-  const patches = jsonPatch.compare(prev.request, row.request);
+  const patches = jsonCompare(prev.request, row.request);     // ✅ use helper
 
   return (
     <aside className="fixed inset-y-0 right-0 w-96 border-l bg-white p-4 shadow-lg">
@@ -113,6 +113,4 @@ function DiffDrawer({ row, onClose }: { row: Row; onClose: () => void }) {
       <pre className="whitespace-pre-wrap break-all text-xs">
         {JSON.stringify(patches, null, 2)}
       </pre>
-    </aside>
-  );
-}
+    </asi
