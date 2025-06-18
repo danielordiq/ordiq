@@ -1,22 +1,25 @@
 /* eslint-disable tailwindcss/no-custom-classname */
-import { cookies } from "next/headers";
+import { cookies }   from "next/headers";
 import { listAssessments } from "@/lib/registry";
-import RegistryTable from "./registrytable";             // ← client table
+import RegistryTable from "./registrytable";
+import type { Database } from "@/types/supabase";       // adjust path if different
+type Row = Database["public"]["Tables"]["assessments"]["Row"];
 
 export const metadata = { title: "Assessment Registry" };
 
 export default async function RegistryPage() {
-  /* ── ① fetch data on the server ──────────────────────────── */
-  const cookieJar = await cookies();                     // await here ✅
+  /* ── fetch on the server ─────────────────────────────── */
+  const cookieJar = await cookies();
   const session   = cookieJar.get("sb-access-token")?.value ?? null;
 
-  const { data: rows = [] } = await listAssessments(session);
+  const { data }  = await listAssessments(session);
+  const rows: Row[] = data ?? [];                      // ← strip the “| null”
 
-  /* ── ② render: pass rows to the client table ─────────────── */
+  /* ── render ──────────────────────────────────────────── */
   return (
     <main className="mx-auto max-w-4xl p-6">
       <h1 className="mb-4 text-2xl font-semibold">Assessment Registry</h1>
-      <RegistryTable rows={rows} />
+      <RegistryTable rows={rows} />                    {/* ✅ still Row[] */}
     </main>
   );
 }
