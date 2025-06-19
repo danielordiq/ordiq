@@ -42,7 +42,12 @@ export default function RegistryTable({ rows }: { rows: Row[] }) {
     }),
   ];
 
-  const table = useReactTable({ data: rows, columns, getCoreRowModel });
+  /* 👇 call getCoreRowModel() and give Row to useReactTable */
+  const table = useReactTable<Row>({
+    data: rows,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   /* ---------- diff drawer state ---------- */
   const [diffSource, setDiffSource] = useState<Row | null>(null);
