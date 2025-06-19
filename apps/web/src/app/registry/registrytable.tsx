@@ -93,6 +93,8 @@ export default function RegistryTable({ rows }: { rows: Row[] }) {
 /* ---------- DiffDrawer ---------- */
 function DiffDrawer({ row, onClose }: { row: Row; onClose: () => void }) {
   const [prev, setPrev] = useState<Row | null>(null);
+  # from your repo root
+ 
 
   /* fetch previous assessment lazily */
   useEffect(() => {
@@ -106,7 +108,7 @@ function DiffDrawer({ row, onClose }: { row: Row; onClose: () => void }) {
 
   if (!prev) return null;
 
-  const patches = jsonCompare(prev.request, row.request);
+  const patches = jsonCompare(prev.request as any, row.request as any);
 
   return (
     <aside className="fixed inset-y-0 right-0 w-96 border-l bg-white p-4 shadow-lg">
