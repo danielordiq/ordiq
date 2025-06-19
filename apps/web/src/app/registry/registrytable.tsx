@@ -11,7 +11,7 @@
         useReactTable,
       } from "@tanstack/react-table";
 
-      import type { Database } from "@/lib/supa";
++ import type { Database } from "@/types/supabase";
 
       type Row = Database["public"]["Tables"]["assessments"]["Row"];
 
