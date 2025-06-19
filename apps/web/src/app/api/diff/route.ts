@@ -1,41 +1,48 @@
-import { NextResponse } from "next/server";
+// apps/web/src/app/api/diff/route.ts
 import { cookies } from "next/headers";
+import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
 
-/* ──────────────────────────────────────────────
-   Supabase client (typed)
-   ──────────────────────────────────────────── */
-const supa = createClient<Database>(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!, // or SUPABASE_ANON_KEY if you prefer
-);
-
-/* GET /api/diff?before=<id> */
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const afterId = searchParams.get("before");
-
-  /* ─ 1. validate query param ─ */
-  if (!afterId)
+/**
+ * GET /api/diff?before=<id>
+ * Returns the most-recent assessment *before* the given id,
+ * for the user identified by the sb-access-token cookie.
+ */
+export async function GET(req: NextRequest) {
+  /* ── 1. validate query param ─────────────────────────────── */
+  const beforeId = new URL(req.url).searchParams.get("before");
+  if (!beforeId) {
     return NextResponse.json({ error: "missing id" }, { status: 400 });
+  }
 
-  /* ─ 2. read session token (cookies() is async!) ─ */
-  const session = (await cookies()).get("sb-access-token")?.value ?? null;
+  /* ── 2. read session token (cookies() is async) ───────────── */
+  const sessionToken = (await cookies()).get("sb-access-token")?.value ?? null;
+  if (!sessionToken) {
+    return NextResponse.json({ data: null }); // unauthenticated ⇒ nothing to diff
+  }
 
-  /* unauthenticated → nothing to diff */
-  if (!session) return NextResponse.json({ data: null });
+  /* ── 3. create Supabase client *inside* the handler ───────── */
+  const supa = createClient<Database>(
+    process.env.SUPABASE_URL!,        // required – set in Vercel dashboard
+    process.env.SUPABASE_ANON_KEY!,   // ← use the same key as elsewhere
+    { auth: { persistSession: false } }
+  );
 
-  /* ─ 3. fetch previous assessment run for this user ─ */
-  const { data } = await supa
+  /* ── 4. fetch previous assessment for this user ───────────── */
+  const { data, error } = await supa
     .from("assessments")
     .select("*")
-    .eq("user_id", session)
-    .lt("id", afterId)
+    .eq("user_id", sessionToken)
+    .lt("id", beforeId)
     .order("created_at", { ascending: false })
     .limit(1)
     .single();
 
-  /* ─ 4. respond ─ */
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  /* ── 5. respond ───────────────────────────────────────────── */
   return NextResponse.json({ data });
 }
