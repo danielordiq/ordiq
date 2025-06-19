@@ -93,8 +93,6 @@ export default function RegistryTable({ rows }: { rows: Row[] }) {
 /* ---------- DiffDrawer ---------- */
 function DiffDrawer({ row, onClose }: { row: Row; onClose: () => void }) {
   const [prev, setPrev] = useState<Row | null>(null);
-  # from your repo root
- 
 
   /* fetch previous assessment lazily */
   useEffect(() => {
