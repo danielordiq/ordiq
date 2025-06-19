@@ -1,9 +1,11 @@
 /* eslint-disable tailwindcss/no-custom-classname */
-import { cookies }   from "next/headers";
+import { cookies }       from "next/headers";
 import { listAssessments } from "@/lib/registry";
-import RegistryTable from "./registrytable";
-import type { Database } from "@/types/supabase";       // adjust path if different
+import RegistryTable     from "./registrytable";
+import type { Database } from "@/types/supabase";
+
 type Row = Database["public"]["Tables"]["assessments"]["Row"];
+
 
 export const metadata = { title: "Assessment Registry" };
 
