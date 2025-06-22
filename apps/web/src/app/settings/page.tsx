@@ -9,7 +9,9 @@ const supa = createClient(
 
 export default function SettingsPage() {
   const [url, setUrl] = useState("");
-  const tenantId = /* get from user session or context */;
+  // TODO: replace with your real session lookup (e.g. supabase auth user ID)
+  const tenantId = "";
+
 
   useEffect(() => {
     supa
