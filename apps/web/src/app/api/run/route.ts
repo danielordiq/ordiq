@@ -104,20 +104,42 @@ export async function POST(req: Request) {
       // Optional: don’t block the request; we still return success to the user.
     }
 
-      // 5) send Slack webhook on HIGH
-      if (rule.tier === "High" && SLACK_WEBHOOK_URL) {
-        // fire off a simple message
-        await fetch(SLACK_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: `:warning: *High-risk assessment*  
+
+    /* ────── 5) dynamic Slack webhook on HIGH ────── */
+    if (rule.tier === "High") {
+      // ① extract the tenant/company ID from the payload
+      //    (make sure your client is sending { company_id: "...", … })
+      const companyId = (body as any).company_id as string | undefined
+
+      if (companyId) {
+        // ② look up that tenant’s row in Supabase
+        const { data: tenant, error: tenantErr } = await supa
+          .from("tenants")
+          .select("slack_webhook_url")
+          .eq("id", companyId)
+          .single()
+
+        if (tenantErr || !tenant?.slack_webhook_url) {
+          console.error("Could not find Slack webhook for tenant", {
+            companyId,
+            error: tenantErr,
+          })
+        } else {
+          // ③ fire off the same payload into *their* webhook
+          await fetch(tenant.slack_webhook_url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              text: `:warning: *High-risk assessment*  
     • key: *${chosenKey}*  
     • user: \`${authUser?.id ?? "anonymous"}\`  
     • url: ${process.env.ORDIQ_PREVIEW_URL}/run/${chosenKey}`,
-          }),
-        });
+            }),
+          })
+        }
       }
+    }
+
 
     /* ---------- reply ----------------- */
     return NextResponse.json({
