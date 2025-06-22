@@ -104,26 +104,20 @@ export async function POST(req: Request) {
       // Optional: don’t block the request; we still return success to the user.
     }
 
-    // 5 ▸ (Optional) Slack alert on High risk
-    if (rule.tier === "High" && process.env.SLACK_WEBHOOK_URL) {
-      try {
-        // fire and forget
-        await fetch(process.env.SLACK_WEBHOOK_URL, {
+      // 5) send Slack webhook on HIGH
+      if (rule.tier === "High" && SLACK_WEBHOOK_URL) {
+        // fire off a simple message
+        await fetch(SLACK_WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            text: [
-              `⚠️ *High-Risk Assessment*`,
-              `• Purpose: ${body.purpose || "–"}`,
-              `• Tier: ${rule.tier}`,
-              `• Key: ${chosenKey}`,
-            ].join("\n"),
+            text: `:warning: *High-risk assessment*  
+    • key: *${chosenKey}*  
+    • user: \`${authUser?.id ?? "anonymous"}\`  
+    • url: ${process.env.ORDIQ_PREVIEW_URL}/run/${chosenKey}`,
           }),
         });
-      } catch (e) {
-        console.error("⚠️ Slack webhook failed:", e);
       }
-    }
 
     /* ---------- reply ----------------- */
     return NextResponse.json({
