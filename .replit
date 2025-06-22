@@ -1,7 +1,7 @@
 modules = ["nodejs-20"]
 [nix]
 channel = "stable-24_05"
-packages = ["python312Packages.pip", "python3", "uv"]
+packages = ["python312Packages.pip", "python3", "uv", "supabase-cli"]
 
 [workflows]
 runButton = "Run Web App"

@@ -10,6 +10,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 import rulesJSON from "@/config/ai_act_v1.json" assert { type: "json" };
 
+// ✅ env-driven slack webhook
+const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL!;
+
 /* ──────────────────────────────
    1 ▸ Types & data
 ─────────────────────────────── */
@@ -99,6 +102,27 @@ export async function POST(req: Request) {
     } catch (err) {
       console.error("stripe usage record failed", err);
       // Optional: don’t block the request; we still return success to the user.
+    }
+
+    // 5 ▸ (Optional) Slack alert on High risk
+    if (rule.tier === "High" && process.env.SLACK_WEBHOOK_URL) {
+      try {
+        // fire and forget
+        await fetch(process.env.SLACK_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: [
+              `⚠️ *High-Risk Assessment*`,
+              `• Purpose: ${body.purpose || "–"}`,
+              `• Tier: ${rule.tier}`,
+              `• Key: ${chosenKey}`,
+            ].join("\n"),
+          }),
+        });
+      } catch (e) {
+        console.error("⚠️ Slack webhook failed:", e);
+      }
     }
 
     /* ---------- reply ----------------- */
