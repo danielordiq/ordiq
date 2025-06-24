@@ -140,3 +140,4 @@ uv.lock
 
 # Ignore generated PDF reports
 report.pdf
+/reports/*.pdf
