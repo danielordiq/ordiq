@@ -16,3 +16,7 @@ task = "shell.exec"
 args = "cd apps/web && npm install && npm run dev"
 
 nixpkgs = ["wkhtmltopdf"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80
