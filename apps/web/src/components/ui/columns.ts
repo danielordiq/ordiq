@@ -1,31 +1,6 @@
-
-"use client";
-
-import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 
-type Model = {
-  id: string;
-  name: string;
-  version: string;
-  risk: "High" | "Limited" | "Minimal";
-  last_run: string;
-};
-
-function getRiskBadgeVariant(risk: string) {
-  switch (risk) {
-    case "High":
-      return "destructive";
-    case "Limited":
-      return "secondary";
-    case "Minimal":
-      return "default";
-    default:
-      return "outline";
-  }
-}
-
-export const columns: ColumnDef<Model>[] = [
+export const columns = [
   {
     accessorKey: "name",
     header: "Name",
@@ -40,8 +15,8 @@ export const columns: ColumnDef<Model>[] = [
     cell: ({ row }) => {
       const risk = row.getValue("risk") as string;
       return (
-        <Badge 
-          variant={getRiskBadgeVariant(risk)} 
+        <Badge
+          variant={getRiskBadgeVariant(risk)}
           className={
             risk === "High" ? "bg-red-500 hover:bg-red-600" :
             risk === "Limited" ? "bg-yellow-500 hover:bg-yellow-600" :
