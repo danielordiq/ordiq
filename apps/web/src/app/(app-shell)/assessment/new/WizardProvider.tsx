@@ -3,52 +3,60 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 
-interface WizardData {
-  purpose?: string
-  dataSources?: string
-  personalData?: boolean
-  annexRef?: string
-  riskLevel?: 'High' | 'Limited' | 'Minimal'
+interface WizardState {
+  currentStep: number
+  formData: Record<string, any>
 }
 
 interface WizardContextType {
-  data: WizardData
-  updateData: (updates: Partial<WizardData>) => void
+  state: WizardState
+  updateFormData: (stepData: Record<string, any>) => void
   nextStep: () => void
   prevStep: () => void
-  currentStep: number
 }
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined)
 
-interface Props {
+interface WizardProviderProps {
   children: ReactNode
 }
 
-export function WizardProvider({ children }: Props) {
-  const [data, setData] = useState<WizardData>({})
-  const [currentStep, setCurrentStep] = useState(1)
+export function WizardProvider({ children }: WizardProviderProps) {
+  const [state, setState] = useState<WizardState>({
+    currentStep: 1,
+    formData: {}
+  })
 
-  const updateData = (updates: Partial<WizardData>) => {
-    setData(prev => ({ ...prev, ...updates }))
+  const updateFormData = (stepData: Record<string, any>) => {
+    setState(prev => ({
+      ...prev,
+      formData: { ...prev.formData, ...stepData }
+    }))
   }
 
   const nextStep = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 5))
+    setState(prev => ({
+      ...prev,
+      currentStep: Math.min(prev.currentStep + 1, 5)
+    }))
   }
 
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1))
+    setState(prev => ({
+      ...prev,
+      currentStep: Math.max(prev.currentStep - 1, 1)
+    }))
+  }
+
+  const contextValue: WizardContextType = {
+    state,
+    updateFormData,
+    nextStep,
+    prevStep
   }
 
   return (
-    <WizardContext.Provider value={{
-      data,
-      updateData,
-      nextStep,
-      prevStep,
-      currentStep
-    }}>
+    <WizardContext.Provider value={contextValue}>
       {children}
     </WizardContext.Provider>
   )
@@ -56,7 +64,7 @@ export function WizardProvider({ children }: Props) {
 
 export function useWizard() {
   const context = useContext(WizardContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useWizard must be used within a WizardProvider')
   }
   return context

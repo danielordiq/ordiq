@@ -1,71 +1,105 @@
-/* apps/web/src/app/(app-shell)/dashboard/ModelsTable.tsx
-   ─────────────────────────────────────────────────────── */
 
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/supabase";
-import { RowSkeleton } from "@/components/RowSkeleton";
+import { createClient } from '@supabase/supabase-js'
+import { Database } from '@/types/supabase'
+import { RowSkeleton } from '@/components/RowSkeleton'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
-/* ▶ extra column that isn’t in the generated type ------------------------ */
-type ExtraFields = { matched_key: string | null };
+type Model = {
+  id: string
+  name: string
+  version: string
+  risk: 'High' | 'Limited' | 'Minimal'
+  last_run: string | null
+}
 
-/* ▶ the actual row shape we’ll get back ---------------------------------- */
-type Row = Database["public"]["Tables"]["assessments"]["Row"] & ExtraFields;
-
-/* ──────────────────────────────────────────────────────────────────────── */
-
-export default async function ModelsTable({ search }: { search: string }) {
-  /* 1️⃣  server-side query */
+async function getModels(): Promise<Model[]> {
   const supabase = createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!,
-  );
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   const { data, error } = await supabase
-    .from("assessments")
-    .select("id, tier, created_at, matched_key, request")
-    .ilike("matched_key", `%${search}%`)
-    .order("created_at", { ascending: false });
+    .from('models')
+    .select('id, name, version, risk, last_run')
+    .order('last_run', { ascending: false, nullsFirst: false })
 
-  if (error) throw error; // handled by <ErrorBoundary />
+  if (error) {
+    console.error('Supabase error:', error)
+    throw error
+  }
 
-  /* 2️⃣  render HTML table */
+  return data || []
+}
+
+function getRiskColor(risk: string) {
+  switch (risk) {
+    case 'High':
+      return 'text-red-500 bg-red-50'
+    case 'Limited':
+      return 'text-amber-500 bg-amber-50'
+    case 'Minimal':
+      return 'text-emerald-500 bg-emerald-50'
+    default:
+      return 'text-gray-500 bg-gray-50'
+  }
+}
+
+export async function ModelsTable() {
+  const models = await getModels()
+
   return (
-    <table className="w-full text-sm">
-      <thead className="text-left text-xs text-slate-500">
-        <tr>
-          <th className="py-2">Key</th>
-          <th className="py-2">Purpose</th>
-          <th className="py-2">Risk</th>
-          <th className="py-2">Created</th>
-        </tr>
-      </thead>
-
-      <tbody className="divide-y divide-slate-100">
-        {data && data.length ? (
-          data.map((row) => {
-            /* request is a jsonb column → pull `"purpose"` if present */
-            const purpose =
-              typeof row.request === "object" && row.request !== null
-                ? ((row.request as Record<string, unknown>).purpose ?? "—")
-                : "—";
-
-            return (
-              <tr key={row.id} className="group hover:bg-slate-50">
-                <td className="py-2 font-medium">{row.matched_key}</td>
-                <td>{String(purpose)}</td>
-                <td className="font-medium">{row.tier}</td>
-                <td>
-                  {row.created_at
-                    ? new Date(row.created_at).toLocaleDateString()
-                    : "—"}
-                </td>
-              </tr>
-            );
-          })
-        ) : (
-          <RowSkeleton />
-        )}
-      </tbody>
-    </table>
-  );
+    <ErrorBoundary>
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+            AI Models
+          </h3>
+          {models.length === 0 ? (
+            <p className="text-gray-500">No models found</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Version
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Risk Level
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Last Run
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {models.map((model) => (
+                    <tr key={model.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {model.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {model.version}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRiskColor(model.risk)}`}>
+                          {model.risk}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {model.last_run ? new Date(model.last_run).toLocaleDateString() : 'Never'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </ErrorBoundary>
+  )
 }
