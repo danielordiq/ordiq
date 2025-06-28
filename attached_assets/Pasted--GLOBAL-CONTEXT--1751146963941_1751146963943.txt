@@ -1,0 +1,111 @@
+# ───────────────────────────────────────────────────────────────
+# GLOBAL CONTEXT
+# ───────────────────────────────────────────────────────────────
+• Product: Ordiq – EU AI Act compliance SaaS
+• Stack  : Next.js 14 (app-router) · pnpm · TypeScript strict
+• UI     : shadcn/ui · Tailwind 4 · Radix UI · Lucide icons · Framer-motion
+• Data   : Supabase Postgres
+    tables
+      ─ models(id, name, version, risk, last_run)
+      ─ assessments(id, model_id FK, annex_ref, pdf_page, risk, created_at)
+      ─ usage_records(id, org_id, run_ts)
+• Auth   : Supabase helpers in lib/supabase.ts
+• Billing: Stripe  –  portal ↗ `/api/stripe/portal`
+• Types  : generated in `types/supabase.ts` (alias `@types/supabase`)
+• Tailwind tokens to add → tailwind.config.js
+      riskHigh     '#f87171'   /* red-500   */
+      riskLimited  '#fbbf24'   /* amber-400 */
+      riskMinimal  '#34d399'   /* emerald-400 */
+
+# ───────────────────────────────────────────────────────────────
+# WEEK-5 SPRINT BACKLOG
+# ───────────────────────────────────────────────────────────────
+MONDAY – App Shell & Tokens
+  1.  `app/(app-shell)/layout.tsx`, `components/AppShell.tsx`
+      (top-nav + left-rail frame).
+  2.  Create empty pages: /dashboard, /assessment/new/step/[1-5],
+      /result/[runId], /registry/[modelId], /settings/billing.
+  3.  Extend tailwind colours with riskHigh / Limited / Minimal.
+  4.  Install deps: @headlessui/react react-hook-form zod framer-motion.
+
+TUESDAY – Dashboard + Data
+  * File `app/dashboard/ModelsTable.tsx` (RSC):
+      `const rows = await getModels();`
+  * Server Action `getModels()`:
+      SELECT id,name,version,risk,last_run
+      FROM models ORDER BY last_run DESC NULLS LAST; throw on error.
+  * Debounce hook `hooks/useDebouncedValue.ts`.
+  * RowSkeleton component & ErrorBoundary.
+
+WEDNESDAY – 5-Step EU AI Act Wizard
+  Route `/assessment/new/step/[n]/page.tsx` (n 1-5)
+    1. React Context `components/WizardProvider.tsx`.
+    2. Steps:
+       ① System purpose  (HR screening / Credit scoring / Chat support / Recommender / Other)  
+       ② Data & inputs   (textarea data_sources, checkbox personal_data)  
+       ③ Annex III mapping (select annex_ref auto-filtered)  
+       ④ Draft risk level (select High/Limited/Minimal)  
+       ⑤ Review + Submit (POST `/api/assessment/run`)
+    3. Zod validation, react-hook-form, <FullScreenSpinner/>.
+    4. `lib/ghostwriterSuggest.ts` helper (calls `/api/suggest`).
+
+THURSDAY – Result · Registry · Billing
+  * `app/result/[runId]/page.tsx` – risk banner, obligations checklist (Art 10, 14, 72), dossier download.
+  * `app/registry/[modelId]/page.tsx` – diff UI via `/api/diff`, motion progress bar.
+  * `app/settings/billing/page.tsx`
+        – plan, usage bar (supabase count usage_records), “Upgrade plan” → Stripe Checkout,
+          Stripe Portal link.
+  * Re-use Skeleton + ErrorBoundary throughout.
+
+FRIDAY – Test & Deploy
+  * Playwright tests  
+      `e2e/dashboard.spec.ts`  (table renders)  
+      `e2e/wizard.spec.ts`     (complete wizard)  
+      `e2e/billing.spec.ts`    (billing page loads)
+  * Visual-regression screenshots (Playwright).  
+  * CI posts Vercel Preview URL to PR.  
+  * Prod deploy once green: `pnpm vercel --prod`.
+
+# ───────────────────────────────────────────────────────────────
+# FILES TO CREATE / OVERWRITE
+# ───────────────────────────────────────────────────────────────
+app/(app-shell)/layout.tsx
+components/AppShell.tsx
+components/topbar.tsx
+components/dashboard-toolbar.tsx
+hooks/useDebouncedValue.ts
+components/RowSkeleton.tsx
+components/ErrorBoundary.tsx
+lib/risk-color.ts
+app/dashboard/ModelsTable.tsx
+components/model-columns.tsx
+app/assessment/new/WizardProvider.tsx
+app/assessment/new/step/[1]/page.tsx
+app/assessment/new/step/[2]/page.tsx
+app/assessment/new/step/[3]/page.tsx
+app/assessment/new/step/[4]/page.tsx
+app/assessment/new/step/[5]/page.tsx
+lib/ghostwriterSuggest.ts
+app/result/[runId]/page.tsx
+app/registry/[modelId]/page.tsx
+app/settings/billing/page.tsx
+tailwind.config.js  (extend colours only)
+e2e/dashboard.spec.ts
+e2e/wizard.spec.ts
+e2e/billing.spec.ts
+
+# ───────────────────────────────────────────────────────────────
+# IMPLEMENTATION GUIDELINES
+# ───────────────────────────────────────────────────────────────
+• `import { Database } from "@types/supabase"`
+    type ModelRow = Database["public"]["Tables"]["models"]["Row"].
+• Risk badge colours use the Tailwind tokens above.
+• All Supabase calls server-side; handle `query.error`.
+• Strings via `utils/intl.ts -> t(key)`.
+• No client-side fetching on Dashboard (RSC + ServerAction).
+• Stage every new/changed file but **do NOT push**.
+• After staging, print exactly:
+      ✅ Done – <N> files staged. Run `git push` when ready.
+# ───────────────────────────────────────────────────────────────
+# END
+# ───────────────────────────────────────────────────────────────

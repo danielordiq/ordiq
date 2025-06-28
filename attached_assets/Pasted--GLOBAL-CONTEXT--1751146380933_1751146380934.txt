@@ -1,0 +1,101 @@
+# ────────────────────────────────────────────────────────────────
+# GLOBAL CONTEXT
+# ────────────────────────────────────────────────────────────────
+• Product: Ordiq – EU AI Act compliance SaaS
+• Stack : Next.js 14 (app router) · pnpm · TypeScript strict
+• UI    : shadcn/ui · Tailwind 4 · Radix UI · Lucide icons
+• Data  : Supabase Postgres
+      tables
+        ─ models      (id UUID PK,
+                       name text,
+                       version text,
+                       risk text CHECK('High','Limited','Minimal'),
+                       last_run timestamptz)
+        ─ assessments (id UUID PK,
+                       model_id UUID FK→models.id,
+                       annex_reference text,
+                       pdf_page int,
+                       risk text,
+                       created_at timestamptz)
+• RAG   : A PDF-parsing Edge Function already inserts rows into
+          `assessments` with risk derived from Annex III rules.
+• Auth  : Supabase auth · helpers in `lib/supabase.ts`
+• Billing: Stripe; `/api/stripe/portal` opens Customer Portal
+• Types : generated in `types/supabase.ts`
+          alias `@types/supabase`
+
+# ────────────────────────────────────────────────────────────────
+# GOAL
+# ────────────────────────────────────────────────────────────────
+Build a complete Dashboard + Billing experience.
+
+## A. Dashboard   →  /app/(dash)/page.tsx
+1. Shows a table of **models** (name, version, risk badge, last run).
+2. Clicking a row opens `/app/registry/[modelId]/page.tsx`
+   (already scaffolded) showing full assessment history.
+3. Above the table:
+     – Search box (client-side debounce).  
+     – “Add new assessment” → `/wizard/new`.
+4. Risk badge colours:
+     High    : destructive / red  
+     Limited : warning    / yellow  
+     Minimal : success    / green
+5. Risk badge tooltip: “Risk per EU AI Act Annex III”.
+6. Server Action `getModels()`:
+     SELECT id, name, version, risk, last_run FROM models
+     ORDER BY last_run DESC NULLS LAST;
+     throw if query.error.
+7. Empty state: icon + “No models yet — run your first assessment”.
+8. Loading state: shadcn `<Skeleton>` rows.
+
+## B. Billing page   → /app/billing/page.tsx
+1. Loads current Stripe subscription via `/api/billing/status`
+   (already exists).
+2. Shows:
+     – Plan name & price  
+     – Usage this month (runs, pulled from Supabase edge function
+       `usage_records`)  
+     – Button “Open Stripe portal” → `/api/stripe/portal`
+3. If no subscription => CTA “Start free trial” → Stripe Checkout
+   session at `/api/billing/checkout?plan=team_monthly`.
+
+## C. Shared chrome
+* Sticky top-bar:
+    Ordiq logo (links to `/`), nav links “Dashboard”, “Billing”,
+    avatar dropdown (Profile, Log out).
+* <DataTable> generic component lives in `components/ui`.
+* Date formatting with `date-fns/formatDistanceToNow`.
+* All strings go through `utils/intl.ts -> t(key)`.
+
+## D. Playwright tests
+* e2e/dashboard.spec.ts – asserts ≥1 model row or “No models yet”.
+* e2e/billing.spec.ts   – asserts plan heading is visible.
+
+# ────────────────────────────────────────────────────────────────
+# IMPLEMENTATION RULES
+# ────────────────────────────────────────────────────────────────
+• Use `import { Database } from "@types/supabase"`;
+  type ModelRow   = Database["public"]["Tables"]["models"]["Row"];
+• Components to create or overwrite:
+
+   app/(dash)/page.tsx
+   app/billing/page.tsx
+   components/model-columns.tsx
+   components/dashboard-toolbar.tsx
+   components/topbar.tsx
+   lib/risk-color.ts
+   hooks/use-debounced-value.ts
+   e2e/dashboard.spec.ts
+   e2e/billing.spec.ts
+
+• Respect Tailwind design token names already in tailwind.config.js.
+• No external UI libs beyond shadcn/radix/lucide.
+• Keep all Supabase calls server-side; no client keys.
+• Stage all edits; **do not push**.
+
+# ────────────────────────────────────────────────────────────────
+# DELIVERABLES
+# ────────────────────────────────────────────────────────────────
+1. New/updated files above.
+2. Summary: “Done – ⟨N⟩ files staged. Run `git push` to deploy.”
+# ────────────────────────────────────────────────────────────────
