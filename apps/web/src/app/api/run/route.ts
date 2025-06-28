@@ -82,12 +82,16 @@ export async function POST(req: Request) {
     } = await supa.auth.getUser();
 
     // ② insert the row, including user_id
-    await supa.from("assessments").insert({
+    const insertQuery = await supa.from("assessments").insert({
       request: body,
       matched_key: chosenKey,
       tier: rule.tier,
       user_id: authUser?.id ?? null, // ✨ uses renamed var
     });
+    if (insertQuery.error) {
+      console.error("Supabase error in apps/web/src/app/api/run/route.ts:95", insertQuery.error);
+      throw insertQuery.error;
+    }
 
     /* ---------- Stripe usage metering ---------- */
     try {

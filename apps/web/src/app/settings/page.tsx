@@ -20,14 +20,24 @@ export default function SettingsPage() {
       .select("slack_webhook_url")
       .eq("id", tenantId)
       .single()
-      .then(({ data }) => setUrl(data?.slack_webhook_url || ""));
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Supabase error in apps/web/src/app/settings/page.tsx:20", error);
+          throw error;
+        }
+        setUrl(data?.slack_webhook_url || "");
+      });
   }, [tenantId]);
 
   const save = async () => {
-    await supa
+    const updateQuery = await supa
       .from("tenants")
       .update({ slack_webhook_url: url })
       .eq("id", tenantId);
+    if (updateQuery.error) {
+      console.error("Supabase error in apps/web/src/app/settings/page.tsx:28", updateQuery.error);
+      throw updateQuery.error;
+    }
     alert("Saved!");
   };
 
