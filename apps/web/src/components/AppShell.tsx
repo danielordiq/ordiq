@@ -21,12 +21,6 @@ const navigation = [
   { name: 'Settings', href: '/settings/billing', icon: CogIcon },
 ]
 
-'use client'
-
-import { useState } from 'react'
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
-
 interface AppShellProps {
   children: React.ReactNode
 }
