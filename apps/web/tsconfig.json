@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    /* ─── Output & Language ──────────────────────────── */
+    /* — Output & Language — */
     "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "moduleResolution": "bundler",
     "module": "esnext",
     "jsx": "preserve",
 
-    /* ─── Strictness & Safety ────────────────────────── */
+    /* — Strictness & Safety — */
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
@@ -17,14 +17,13 @@
     "isolatedModules": true,
     "incremental": true,
 
-    /* ─── Path aliases ─────────────────────────────────
-         baseUrl = src   ⇒  "@/config/…"  ↦  apps/web/src/config/…   */
-    "baseUrl": "src",
+    /* — Path aliases — */
+    "baseUrl": ".",            // ◀︎ changed from "src"
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["src/*"]         // ◀︎ points into src
     },
 
-    /* ─── Next-js plugin (keeps TS + SWC aligned) ────── */
+    /* — Next-js plugin keeps TS + SWC aligned — */
     "plugins": [{ "name": "next" }]
   },
 
