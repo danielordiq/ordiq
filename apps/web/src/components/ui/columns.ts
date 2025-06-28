@@ -16,7 +16,7 @@ function getRiskBadgeVariant(risk: string) {
   switch (risk) {
     case "High":
       return "destructive";
-    case "Limited": 
+    case "Limited":
       return "secondary";
     case "Minimal":
       return "default";
@@ -31,7 +31,7 @@ export const columns: ColumnDef<Model>[] = [
     header: "Name",
   },
   {
-    accessorKey: "version", 
+    accessorKey: "version",
     header: "Version",
   },
   {
@@ -55,7 +55,7 @@ export const columns: ColumnDef<Model>[] = [
   },
   {
     accessorKey: "last_run",
-    header: "Last Run", 
+    header: "Last Run",
     cell: ({ row }) => {
       const date = new Date(row.getValue("last_run"));
       return date.toLocaleDateString();
