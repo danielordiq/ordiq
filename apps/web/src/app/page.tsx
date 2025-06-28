@@ -1,13 +1,32 @@
-/* apps/web/src/app/page.tsx
-   – public landing page – */
 
 "use client";
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Landing() {
   const supabase = createClientComponentClient();
-  const signIn = () => supabase.auth.signInWithOAuth({ provider: "github" });
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push('/dashboard');
+      }
+    };
+    checkUser();
+  }, [router, supabase.auth]);
+
+  const signIn = async () => {
+    await supabase.auth.signInWithOAuth({ 
+      provider: "github",
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`
+      }
+    });
+  };
 
   return (
     <div className="grid h-screen place-items-center">
