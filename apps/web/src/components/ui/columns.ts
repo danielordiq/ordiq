@@ -16,7 +16,7 @@ function getRiskBadgeVariant(risk: string) {
   switch (risk) {
     case "High":
       return "destructive";
-    case "Limited":
+    case "Limited": 
       return "secondary";
     case "Minimal":
       return "default";
@@ -31,7 +31,7 @@ export const columns: ColumnDef<Model>[] = [
     header: "Name",
   },
   {
-    accessorKey: "version",
+    accessorKey: "version", 
     header: "Version",
   },
   {
@@ -40,11 +40,14 @@ export const columns: ColumnDef<Model>[] = [
     cell: ({ row }) => {
       const risk = row.getValue("risk") as string;
       return (
-        <Badge variant={getRiskBadgeVariant(risk)} className={
-          risk === "High" ? "bg-red-500 hover:bg-red-600" :
-          risk === "Limited" ? "bg-yellow-500 hover:bg-yellow-600" :
-          "bg-green-500 hover:bg-green-600"
-        }>
+        <Badge 
+          variant={getRiskBadgeVariant(risk)} 
+          className={
+            risk === "High" ? "bg-red-500 hover:bg-red-600" :
+            risk === "Limited" ? "bg-yellow-500 hover:bg-yellow-600" :
+            "bg-green-500 hover:bg-green-600"
+          }
+        >
           {risk}
         </Badge>
       );
@@ -52,7 +55,7 @@ export const columns: ColumnDef<Model>[] = [
   },
   {
     accessorKey: "last_run",
-    header: "Last Run",
+    header: "Last Run", 
     cell: ({ row }) => {
       const date = new Date(row.getValue("last_run"));
       return date.toLocaleDateString();
