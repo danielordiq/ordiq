@@ -19,6 +19,8 @@ const navigation = [
   { name: 'Settings', href: '/settings/billing', icon: CogIcon },
 ]
 
+export { navigation }
+
 interface AppShellProps {
   children: React.ReactNode
 }

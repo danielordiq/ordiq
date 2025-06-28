@@ -14,7 +14,7 @@ export type Database = {
           id: string
           name: string
           version: string
-          risk: 'High' | 'Limited' | 'Minimal'
+          risk: "High" | "Limited" | "Minimal"
           last_run: string | null
           score: number
           created_at: string
@@ -24,7 +24,7 @@ export type Database = {
           id?: string
           name: string
           version: string
-          risk: 'High' | 'Limited' | 'Minimal'
+          risk: "High" | "Limited" | "Minimal"
           last_run?: string | null
           score?: number
           created_at?: string
@@ -34,7 +34,7 @@ export type Database = {
           id?: string
           name?: string
           version?: string
-          risk?: 'High' | 'Limited' | 'Minimal'
+          risk?: "High" | "Limited" | "Minimal"
           last_run?: string | null
           score?: number
           created_at?: string
