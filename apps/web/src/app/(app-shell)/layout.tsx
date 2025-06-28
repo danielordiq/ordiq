@@ -1,7 +1,12 @@
-import '../globals.css';          // make sure Tailwind base styles load
-import AppShell from '@/components/AppShell';
+/* apps/web/src/app/(app-shell)/layout.tsx */
+import "../../globals.css"; // ⬅️ change “./” → “../../”
+import AppShell from "@/components/AppShell";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
