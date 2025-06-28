@@ -1,4 +1,15 @@
-// apps/web/src/app/dashboard/page.tsx
+// apps/web/src/app/(app-shell)/dashboard/page.tsx
+import dynamic from "next/dynamic";
+
+/* 👉  Import the client component lazily so it bundles separately */
+const SearchableTable = dynamic(() => import("./SearchableTable.client"), {
+  ssr: false,
+});
+
 export default function Dashboard() {
-  return <h1 className="text-2xl font-semibold">Dashboard – coming soon</h1>;
+  return (
+    <section className="space-y-6">
+      <SearchableTable />
+    </section>
+  );
 }
