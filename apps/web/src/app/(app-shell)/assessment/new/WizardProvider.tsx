@@ -2,60 +2,40 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 
-interface WizardState {
-  currentStep: number
-  formData: Record<string, any>
-}
-
 interface WizardContextType {
-  state: WizardState
-  updateFormData: (stepData: Record<string, any>) => void
+  currentStep: number
+  setCurrentStep: (step: number) => void
   nextStep: () => void
   prevStep: () => void
+  totalSteps: number
 }
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined)
 
 interface WizardProviderProps {
   children: ReactNode
+  totalSteps?: number
 }
 
-export function WizardProvider({ children }: WizardProviderProps) {
-  const [state, setState] = useState<WizardState>({
-    currentStep: 1,
-    formData: {}
-  })
-
-  const updateFormData = (stepData: Record<string, any>) => {
-    setState(prev => ({
-      ...prev,
-      formData: { ...prev.formData, ...stepData }
-    }))
-  }
+export function WizardProvider({ children, totalSteps = 5 }: WizardProviderProps) {
+  const [currentStep, setCurrentStep] = useState(1)
 
   const nextStep = () => {
-    setState(prev => ({
-      ...prev,
-      currentStep: Math.min(prev.currentStep + 1, 5)
-    }))
+    setCurrentStep(prev => Math.min(prev + 1, totalSteps))
   }
 
   const prevStep = () => {
-    setState(prev => ({
-      ...prev,
-      currentStep: Math.max(prev.currentStep - 1, 1)
-    }))
-  }
-
-  const contextValue: WizardContextType = {
-    state,
-    updateFormData,
-    nextStep,
-    prevStep
+    setCurrentStep(prev => Math.max(prev - 1, 1))
   }
 
   return (
-    <WizardContext.Provider value={contextValue}>
+    <WizardContext.Provider value={{
+      currentStep,
+      setCurrentStep,
+      nextStep,
+      prevStep,
+      totalSteps
+    }}>
       {children}
     </WizardContext.Provider>
   )
@@ -67,48 +47,4 @@ export function useWizard() {
     throw new Error('useWizard must be used within a WizardProvider')
   }
   return context
-}
-
-
-import {  useState, createContext, useContext, ReactNode } from 'react'
-
-interface WizardContextType {
-  currentStep: number
-  setCurrentStep: (step: number) => void
-  formData: Record<string, any>
-  updateFormData: (data: Record<string, any>) => void
-}
-
-const WizardContext = createContext<WizardContextType | undefined>(undefined)
-
-export function useWizard() {
-  const context = useContext(WizardContext)
-  if (!context) {
-    throw new Error('useWizard must be used within a WizardProvider')
-  }
-  return context
-}
-
-interface WizardProviderProps {
-  children: ReactNode
-}
-
-export function WizardProvider({ children }: WizardProviderProps) {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<Record<string, any>>({})
-
-  const updateFormData = (data: Record<string, any>) => {
-    setFormData(prev => ({ ...prev, ...data }))
-  }
-
-  return (
-    <WizardContext.Provider value={{
-      currentStep,
-      setCurrentStep,
-      formData,
-      updateFormData
-    }}>
-      {children}
-    </WizardContext.Provider>
-  )
 }
