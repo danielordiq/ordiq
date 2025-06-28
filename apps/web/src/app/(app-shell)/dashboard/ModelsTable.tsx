@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
-import { Database } from '@/types/supabase'
+import type { Database } from '@/types/supabase'
 import { RowSkeleton } from '@/components/RowSkeleton'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
-import { Suspense } from 'react'
+import { getRiskColorClass } from '@/lib/risk-color'
 
 type Model = {
   id: string
@@ -31,81 +31,47 @@ async function getModels(): Promise<Model[]> {
   return data || []
 }
 
-function getRiskColor(risk: string) {
-  switch (risk) {
-    case 'High':
-      return 'text-red-500 bg-red-50'
-    case 'Limited':
-      return 'text-amber-500 bg-amber-50'
-    case 'Minimal':
-      return 'text-emerald-500 bg-emerald-50'
-    default:
-      return 'text-gray-500 bg-gray-50'
-  }
-}
+export async function ModelsTable() {
+  try {
+    const models = await getModels()
 
-async function ModelsTableContent() {
-  const models = await getModels()
-
-  return (
-    <div className="bg-white shadow rounded-lg">
-      <div className="px-4 py-5 sm:p-6">
-        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-          AI Models Registry
-        </h3>
-        <div className="overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Model
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Version
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Risk Level
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Assessment
-                </th>
+    return (
+      <ErrorBoundary>
+        <div className="rounded-md border">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b bg-gray-50">
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Model</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Version</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Risk Level</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Last Run</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {models.map((model: any) => (
-                <tr key={model.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {model.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {model.version}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      model.risk === 'High' ? 'bg-red-100 text-red-800' :
-                      model.risk === 'Limited' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
+            <tbody className="divide-y divide-gray-200">
+              {models.map((model) => (
+                <tr key={model.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{model.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{model.version}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRiskColorClass(model.risk)}`}>
                       {model.risk}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {model.last_run || 'Never'}
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {model.last_run ? new Date(model.last_run).toLocaleDateString() : 'Never'}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
-  )
-}
-
-export function ModelsTable() {
-  return (
-    <Suspense fallback={<div>Loading models...</div>}>
-      <ModelsTableContent />
-    </Suspense>
-  )
+      </ErrorBoundary>
+    )
+  } catch (error) {
+    return (
+      <ErrorBoundary>
+        <RowSkeleton />
+      </ErrorBoundary>
+    )
+  }
 }
