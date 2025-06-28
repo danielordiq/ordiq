@@ -25,7 +25,7 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
-export default function AppShell({ children }: AppShellProps) {
+function AppShell({ children }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
 
@@ -108,3 +108,6 @@ export default function AppShell({ children }: AppShellProps) {
     </div>
   )
 }
+
+export default AppShell
+export { AppShell }
