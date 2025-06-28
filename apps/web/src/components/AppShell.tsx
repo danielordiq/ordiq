@@ -9,12 +9,13 @@ import {
   ClipboardDocumentListIcon,
   CogIcon,
   Bars3Icon,
-  XMarkIcon 
+  XMarkIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline'
 import { cn } from '@/lib/utils'
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+  { name: 'Dashboard', href: '/dashboard', icon: ChartBarIcon },
   { name: 'New Assessment', href: '/assessment/new/step/1', icon: DocumentTextIcon },
   { name: 'Registry', href: '/registry', icon: ClipboardDocumentListIcon },
   { name: 'Settings', href: '/settings/billing', icon: CogIcon },
