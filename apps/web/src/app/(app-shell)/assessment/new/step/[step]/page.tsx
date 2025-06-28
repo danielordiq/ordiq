@@ -1,5 +1,5 @@
 import { StepContent } from './StepContent'
-import { WizardProvider } from '../WizardProvider'
+import { WizardProvider } from '../../WizardProvider'
 
 interface Props {
   params: Promise<{ step: string }>
