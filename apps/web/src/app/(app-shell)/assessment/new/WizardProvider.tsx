@@ -1,4 +1,3 @@
-
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
@@ -69,9 +68,9 @@ export function useWizard() {
   }
   return context
 }
-'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+
+import {  useState, createContext, useContext, ReactNode } from 'react'
 
 interface WizardContextType {
   currentStep: number

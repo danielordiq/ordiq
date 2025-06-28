@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      models: {
+        Row: {
+          id: string
+          name: string
+          version: string
+          risk: 'High' | 'Limited' | 'Minimal'
+          last_run: string | null
+          score: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          version: string
+          risk: 'High' | 'Limited' | 'Minimal'
+          last_run?: string | null
+          score?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          version?: string
+          risk?: 'High' | 'Limited' | 'Minimal'
+          last_run?: string | null
+          score?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       assessments: {
         Row: {
           created_at: string | null
