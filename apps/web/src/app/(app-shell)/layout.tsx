@@ -1,4 +1,3 @@
-
 import { AppShell } from '@/components/AppShell'
 import { Database } from '@/types/supabase'
 

@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react'
@@ -25,7 +24,7 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
 
@@ -102,25 +101,18 @@ export function AppShell({ children }: AppShellProps) {
       </div>
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col lg:pl-64">
-        {/* Top bar */}
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4">
-          <button
-            type="button"
-            className="text-gray-500 lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Bars3Icon className="h-6 w-6" />
-          </button>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-500">EU AI Act Compliance</span>
+      <div className="flex-1 overflow-auto">
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">AI Act Compliance Dashboard</h2>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Welcome back</span>
+            </div>
           </div>
-        </div>
-
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        </header>
+        <div className="p-6">
           {children}
-        </main>
+        </div>
       </div>
     </div>
   )
