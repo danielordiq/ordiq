@@ -2,19 +2,19 @@
    ─────────────────────────────────────────────────────── */
 
 import { createClient } from "@supabase/supabase-js";
-import { RowSkeleton }   from "@/components/RowSkeleton";
 import type { Database } from "@/types/supabase";
+import { RowSkeleton } from "@/components/RowSkeleton";
 
-/* 🔖  Extra columns that are NOT in the generated type */
-type ExtraFields = {
-  matched_key: string | null;
-};
+/* ▶ extra column that isn’t in the generated type ------------------------ */
+type ExtraFields = { matched_key: string | null };
 
-/* 🚀  The row type we’ll actually receive from the query */
+/* ▶ the actual row shape we’ll get back ---------------------------------- */
 type Row = Database["public"]["Tables"]["assessments"]["Row"] & ExtraFields;
 
+/* ──────────────────────────────────────────────────────────────────────── */
+
 export default async function ModelsTable({ search }: { search: string }) {
-  /* 1️⃣  Query Supabase on the **server** */
+  /* 1️⃣  server-side query */
   const supabase = createClient<Database>(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_KEY!,
@@ -22,14 +22,13 @@ export default async function ModelsTable({ search }: { search: string }) {
 
   const { data, error } = await supabase
     .from("assessments")
-    /*    ↓ include ONLY the columns we really need  */
     .select("id, tier, created_at, matched_key, request")
     .ilike("matched_key", `%${search}%`)
     .order("created_at", { ascending: false });
 
-  if (error) throw error;
+  if (error) throw error; // handled by <ErrorBoundary />
 
-  /* 2️⃣  Render table */
+  /* 2️⃣  render HTML table */
   return (
     <table className="w-full text-sm">
       <thead className="text-left text-xs text-slate-500">
@@ -42,8 +41,31 @@ export default async function ModelsTable({ search }: { search: string }) {
       </thead>
 
       <tbody className="divide-y divide-slate-100">
-        {data?.length ? (
+        {data && data.length ? (
           data.map((row) => {
-            /* request is JSON → try to read the `"purpose"` field */
+            /* request is a jsonb column → pull `"purpose"` if present */
             const purpose =
-              typeof row.request === "object" &&
+              typeof row.request === "object" && row.request !== null
+                ? ((row.request as Record<string, unknown>).purpose ?? "—")
+                : "—";
+
+            return (
+              <tr key={row.id} className="group hover:bg-slate-50">
+                <td className="py-2 font-medium">{row.matched_key}</td>
+                <td>{String(purpose)}</td>
+                <td className="font-medium">{row.tier}</td>
+                <td>
+                  {row.created_at
+                    ? new Date(row.created_at).toLocaleDateString()
+                    : "—"}
+                </td>
+              </tr>
+            );
+          })
+        ) : (
+          <RowSkeleton />
+        )}
+      </tbody>
+    </table>
+  );
+}
