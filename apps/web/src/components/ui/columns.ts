@@ -1,5 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 
+function getRiskBadgeVariant(risk: string) {
+  switch (risk) {
+    case "High":
+      return "destructive";
+    case "Limited":
+      return "secondary";
+    default:
+      return "default";
+  }
+}
+
 export const columns = [
   {
     accessorKey: "name",
