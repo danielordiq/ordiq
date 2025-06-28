@@ -1,70 +1,49 @@
 /* apps/web/src/app/(app-shell)/dashboard/ModelsTable.tsx
-   ────────────────────────────────────────────────────────
-   Renders an <SSR> table of recent assessment runs
-*/
+   ─────────────────────────────────────────────────────── */
 
 import { createClient } from "@supabase/supabase-js";
+import { RowSkeleton }   from "@/components/RowSkeleton";
 import type { Database } from "@/types/supabase";
-import { RowSkeleton } from "@/components/RowSkeleton";
 
-/** Row type for convenience (generated from supabase/gen types) */
-type Row = Database["public"]["Tables"]["assessments"]["Row"];
+/* 🔖  Extra columns that are NOT in the generated type */
+type ExtraFields = {
+  matched_key: string | null;
+};
+
+/* 🚀  The row type we’ll actually receive from the query */
+type Row = Database["public"]["Tables"]["assessments"]["Row"] & ExtraFields;
 
 export default async function ModelsTable({ search }: { search: string }) {
-  /* 1️⃣  Server-side query -------------------------------------------------- */
+  /* 1️⃣  Query Supabase on the **server** */
   const supabase = createClient<Database>(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!, // safe on the server
+    process.env.SUPABASE_SERVICE_KEY!,
   );
 
   const { data, error } = await supabase
     .from("assessments")
-    .select("*") // ← was limited list
+    /*    ↓ include ONLY the columns we really need  */
+    .select("id, tier, created_at, matched_key, request")
     .ilike("matched_key", `%${search}%`)
-    .order("created_at_timestamp", { ascending: false });
+    .order("created_at", { ascending: false });
 
-  if (error) throw error; // handled by <ErrorBoundary />
+  if (error) throw error;
 
-  /* 2️⃣  Render the table --------------------------------------------------- */
+  /* 2️⃣  Render table */
   return (
     <table className="w-full text-sm">
       <thead className="text-left text-xs text-slate-500">
         <tr>
-          <th className="py-2">Model key</th>
+          <th className="py-2">Key</th>
           <th className="py-2">Purpose</th>
-          <th className="py-2">Tier</th>
+          <th className="py-2">Risk</th>
           <th className="py-2">Created</th>
         </tr>
       </thead>
 
       <tbody className="divide-y divide-slate-100">
         {data?.length ? (
-          data.map((row: Row) => {
+          data.map((row) => {
+            /* request is JSON → try to read the `"purpose"` field */
             const purpose =
-              typeof row.request === "object" && row.request !== null
-                ? // request is jsonb → pull out `"purpose"` if present
-                  // (satisfies both TS & runtime)
-                  ((row.request as Record<string, unknown>).purpose ?? "—")
-                : "—";
-
-            return (
-              <tr key={row.id} className="group hover:bg-slate-50">
-                <td className="py-2 font-medium">{(row as any).matched_key}</td>
-                <td>{String(purpose)}</td>
-                <td className="font-medium">{row.tier}</td>
-                <td>
-                  {row.created_at_timestamp
-                    ? new Date(row.created_at_timestamp).toLocaleDateString()
-                    : "—"}
-                </td>
-              </tr>
-            );
-          })
-        ) : (
-          /* empty while Suspense resolves → show a single skeleton row */
-          <RowSkeleton />
-        )}
-      </tbody>
-    </table>
-  );
-}
+              typeof row.request === "object" &&
