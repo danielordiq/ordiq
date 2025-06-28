@@ -108,13 +108,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-auto">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex-1 lg:pl-64 overflow-auto">
+        <header className="bg-white border-b border-gray-200 px-6 py-4 lg:hidden">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">AI Act Compliance Dashboard</h2>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Welcome back</span>
-            </div>
+            <button
+              type="button"
+              className="text-gray-500 hover:text-gray-600"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Bars3Icon className="h-6 w-6" />
+            </button>
+            <span className="text-lg font-semibold text-gray-900">Ordiq</span>
           </div>
         </header>
         <div className="p-6">
