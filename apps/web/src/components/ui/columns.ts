@@ -1,4 +1,14 @@
+
+import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+
+type Model = {
+  id: string;
+  name: string;
+  version: string;
+  risk: "High" | "Limited" | "Minimal";
+  last_run: string;
+};
 
 function getRiskBadgeVariant(risk: string) {
   switch (risk) {
@@ -11,7 +21,7 @@ function getRiskBadgeVariant(risk: string) {
   }
 }
 
-export const columns = [
+export const columns: ColumnDef<Model>[] = [
   {
     accessorKey: "name",
     header: "Name",
