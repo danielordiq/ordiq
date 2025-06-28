@@ -23,7 +23,7 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
-export default function AppShell({ children }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
 
