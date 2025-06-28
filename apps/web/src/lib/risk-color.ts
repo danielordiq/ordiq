@@ -12,6 +12,19 @@ export function getRiskColor(risk: string): string {
   }
 }
 
+export function getRiskColorClass(risk: string): string {
+  switch (risk?.toLowerCase()) {
+    case 'high':
+      return 'text-red-800 bg-red-100'
+    case 'limited':
+      return 'text-yellow-800 bg-yellow-100'
+    case 'minimal':
+      return 'text-green-800 bg-green-100'
+    default:
+      return 'text-gray-800 bg-gray-100'
+  }
+}
+
 export function getRiskTextColor(risk: string): string {
   switch (risk?.toLowerCase()) {
     case 'high':
