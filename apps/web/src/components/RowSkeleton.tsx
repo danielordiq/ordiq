@@ -1,17 +1,13 @@
-// apps/web/src/components/RowSkeleton.tsx
-export const RowSkeleton = () => (
-  <tr className="animate-pulse">
-    <td>
-      <div className="h-4 w-36 bg-slate-200 rounded" />
-    </td>
-    <td>
-      <div className="h-4 w-20 bg-slate-200 rounded" />
-    </td>
-    <td>
-      <div className="h-4 w-16 bg-slate-200 rounded" />
-    </td>
-    <td>
-      <div className="h-4 w-24 bg-slate-200 rounded" />
-    </td>
-  </tr>
-);
+
+export function RowSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="flex items-center space-x-4 py-4">
+        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/6"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/8"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+      </div>
+    </div>
+  )
+}

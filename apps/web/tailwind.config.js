@@ -1,17 +1,19 @@
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // Tell Tailwind where your React files live ↓
   content: [
-    'apps/web/**/*.{js,ts,jsx,tsx}',
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
-        riskHigh:   '#F87171',
-        riskLimited:'#FBBF24',
-        riskMinimal:'#34D399',
+        riskHigh: '#f87171',     // red-500
+        riskLimited: '#fbbf24',  // amber-400
+        riskMinimal: '#34d399',  // emerald-400
       },
     },
   },
   plugins: [],
-};
+}

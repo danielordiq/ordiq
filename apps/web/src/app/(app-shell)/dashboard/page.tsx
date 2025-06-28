@@ -1,10 +1,14 @@
-// apps/web/src/app/(app-shell)/dashboard/page.tsx
-import SearchableTable from "./SearchableTable.client";
 
-export default function Dashboard() {
+import { ModelsTable } from './ModelsTable'
+
+export default function DashboardPage() {
   return (
-    <section className="space-y-6">
-      <SearchableTable />
-    </section>
-  );
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-600">Monitor your AI models and compliance status</p>
+      </div>
+      <ModelsTable />
+    </div>
+  )
 }

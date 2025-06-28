@@ -1,34 +1,127 @@
-import Link from 'next/link';
-import { PropsWithChildren } from 'react';
-import { Bars3Icon } from '@heroicons/react/24/outline';
 
-export default function AppShell({ children }: PropsWithChildren) {
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { 
+  HomeIcon, 
+  DocumentTextIcon, 
+  ClipboardDocumentListIcon,
+  CogIcon,
+  Bars3Icon,
+  XMarkIcon 
+} from '@heroicons/react/24/outline'
+import { cn } from '@/lib/utils'
+
+const navigation = [
+  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+  { name: 'New Assessment', href: '/assessment/new/step/1', icon: DocumentTextIcon },
+  { name: 'Registry', href: '/registry', icon: ClipboardDocumentListIcon },
+  { name: 'Settings', href: '/settings/billing', icon: CogIcon },
+]
+
+interface AppShellProps {
+  children: React.ReactNode
+}
+
+export function AppShell({ children }: AppShellProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const pathname = usePathname()
+
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-900">
-      {/* Left rail */}
-      <aside className="w-56 shrink-0 border-r border-slate-200 bg-white">
-        <div className="p-4 font-bold">Guardrail AI</div>
-        <nav className="space-y-1">
-          <Link href="/dashboard" className="block px-4 py-2 hover:bg-slate-100">Dashboard</Link>
-          <Link href="/registry"   className="block px-4 py-2 hover:bg-slate-100">Registry</Link>
-          <Link href="/settings/billing" className="block px-4 py-2 hover:bg-slate-100">Billing</Link>
-        </nav>
-      </aside>
-
-      {/* Main column */}
-      <main className="flex-1 overflow-y-auto">
-        {/* Top bar */}
-        <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
-          <div className="flex items-center gap-2">
-            <Bars3Icon className="h-6 w-6 text-slate-400" />
-            <span className="text-sm font-medium text-slate-500">ACME Inc.</span>
+    <div className="flex h-full">
+      {/* Mobile sidebar */}
+      <div className={cn(
+        'fixed inset-0 z-50 lg:hidden',
+        sidebarOpen ? 'block' : 'hidden'
+      )}>
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white">
+          <div className="flex h-16 items-center justify-between px-4">
+            <span className="text-xl font-bold text-gray-900">Ordiq</span>
+            <button
+              type="button"
+              className="text-gray-400 hover:text-gray-600"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </button>
           </div>
-          {/* Placeholder user menu */}
-          <div className="h-8 w-8 rounded-full bg-slate-300" />
-        </header>
+          <nav className="flex-1 space-y-1 px-2 py-4">
+            {navigation.map((item) => {
+              const isActive = pathname.startsWith(item.href)
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    'group flex items-center rounded-md px-2 py-2 text-sm font-medium',
+                    isActive
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  )}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <item.icon className="mr-3 h-6 w-6 flex-shrink-0" />
+                  {item.name}
+                </Link>
+              )
+            })}
+          </nav>
+        </div>
+      </div>
 
-        <div className="p-6">{children}</div>
-      </main>
+      {/* Desktop sidebar */}
+      <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
+        <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
+          <div className="flex h-16 items-center px-4">
+            <span className="text-xl font-bold text-gray-900">Ordiq</span>
+          </div>
+          <nav className="flex-1 space-y-1 px-2 py-4">
+            {navigation.map((item) => {
+              const isActive = pathname.startsWith(item.href)
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    'group flex items-center rounded-md px-2 py-2 text-sm font-medium',
+                    isActive
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  )}
+                >
+                  <item.icon className="mr-3 h-6 w-6 flex-shrink-0" />
+                  {item.name}
+                </Link>
+              )
+            })}
+          </nav>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex flex-1 flex-col lg:pl-64">
+        {/* Top bar */}
+        <div className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4">
+          <button
+            type="button"
+            className="text-gray-500 lg:hidden"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Bars3Icon className="h-6 w-6" />
+          </button>
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-gray-500">EU AI Act Compliance</span>
+          </div>
+        </div>
+
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+          {children}
+        </main>
+      </div>
     </div>
-  );
+  )
 }
