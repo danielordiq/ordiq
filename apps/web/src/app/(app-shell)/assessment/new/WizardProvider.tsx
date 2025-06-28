@@ -1,41 +1,38 @@
+
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 
+interface WizardData {
+  purpose?: string
+  users?: string[]
+  dataTypes?: string[]
+  location?: string
+}
+
 interface WizardContextType {
+  data: WizardData
+  updateData: (newData: Partial<WizardData>) => void
   currentStep: number
   setCurrentStep: (step: number) => void
-  nextStep: () => void
-  prevStep: () => void
-  totalSteps: number
 }
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined)
 
 interface WizardProviderProps {
   children: ReactNode
-  totalSteps?: number
 }
 
-export function WizardProvider({ children, totalSteps = 5 }: WizardProviderProps) {
+export function WizardProvider({ children }: WizardProviderProps) {
+  const [data, setData] = useState<WizardData>({})
   const [currentStep, setCurrentStep] = useState(1)
 
-  const nextStep = () => {
-    setCurrentStep(prev => Math.min(prev + 1, totalSteps))
-  }
-
-  const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1))
+  const updateData = (newData: Partial<WizardData>) => {
+    setData(prev => ({ ...prev, ...newData }))
   }
 
   return (
-    <WizardContext.Provider value={{
-      currentStep,
-      setCurrentStep,
-      nextStep,
-      prevStep,
-      totalSteps
-    }}>
+    <WizardContext.Provider value={{ data, updateData, currentStep, setCurrentStep }}>
       {children}
     </WizardContext.Provider>
   )
