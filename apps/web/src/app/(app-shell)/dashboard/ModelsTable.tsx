@@ -19,9 +19,9 @@ export default async function ModelsTable({ search }: { search: string }) {
 
   const { data, error } = await supabase
     .from("assessments")
-    .select("id, created_at_timestamp, request, matched_key, tier") // ⬅️ real cols
-    .ilike("matched_key", `%${search}%`) // ⬅️ filter
-    .order("created_at_timestamp", { ascending: false }); // ⬅️ newest first
+    .select("*") // ← was limited list
+    .ilike("matched_key", `%${search}%`)
+    .order("created_at_timestamp", { ascending: false });
 
   if (error) throw error; // handled by <ErrorBoundary />
 
