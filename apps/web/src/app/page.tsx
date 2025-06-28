@@ -1,21 +1,6 @@
-'use client';
+// apps/web/src/app/page.tsx
+import { redirect } from 'next/navigation';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-
-export default function Landing() {
-  const supabase = createClientComponentClient();
-
-  const signIn = () =>
-    supabase.auth.signInWithOAuth({ provider: 'github' });
-
-  return (
-    <div className="grid h-screen place-items-center">
-      <button
-        onClick={signIn}
-        className="rounded bg-black px-6 py-3 text-white hover:bg-slate-800"
-      >
-        Sign in with GitHub
-      </button>
-    </div>
-  );
+export default function Home() {
+  redirect('/dashboard');        // 👈 choose whichever in-shell route you prefer
 }
