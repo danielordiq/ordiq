@@ -49,7 +49,7 @@ export default async function ModelsTable({ search }: { search: string }) {
 
             return (
               <tr key={row.id} className="group hover:bg-slate-50">
-                <td className="py-2 font-medium">{row.matched_key}</td>
+                <td className="py-2 font-medium">{(row as any).matched_key}</td>
                 <td>{String(purpose)}</td>
                 <td className="font-medium">{row.tier}</td>
                 <td>
