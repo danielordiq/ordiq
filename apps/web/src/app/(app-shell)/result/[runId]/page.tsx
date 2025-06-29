@@ -1,11 +1,10 @@
 
 interface Props {
-  params: {
-    runId: string
-  }
+  params: Promise<{ runId: string }>
 }
 
-export default function ResultPage({ params }: Props) {
+export default async function ResultPage({ params }: Props) {
+  const { runId } = await params;
   return (
     <div className="space-y-6">
       <div>
