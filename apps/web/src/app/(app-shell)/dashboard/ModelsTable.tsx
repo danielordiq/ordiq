@@ -29,7 +29,7 @@ async function getAssessments(): Promise<Assessment[]> {
   return data || []
 }
 
-export async function ModelsTable() {
+export function ModelsTable() {
   try {
     const assessments = await getAssessments()
 

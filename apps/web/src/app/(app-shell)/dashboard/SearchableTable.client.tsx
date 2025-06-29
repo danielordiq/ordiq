@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useDebounce } from "@/components/useDebounce";
-import ModelsTable from "./ModelsTable";
+import { ModelsTable } from "./ModelsTable";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export default function SearchableTable() {
