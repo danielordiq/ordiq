@@ -1,9 +1,7 @@
 
 import { ErrorBoundary } from '@/components/ErrorBoundary'
-import { DataTable } from '@/components/ui/data-table'
-import { Badge } from '@/components/ui/badge'
-import { ColumnDef } from '@tanstack/react-table'
 import { supabase } from '@/lib/supa'
+import { ModelsTableClient } from './ModelsTableClient'
 
 interface Model {
   id: string
@@ -12,43 +10,6 @@ interface Model {
   risk: string
   created_at: string
 }
-
-const columns: ColumnDef<Model>[] = [
-  {
-    accessorKey: "name",
-    header: "Model Name",
-  },
-  {
-    accessorKey: "version", 
-    header: "Version",
-  },
-  {
-    accessorKey: "risk",
-    header: "Risk Level",
-    cell: ({ row }) => {
-      const risk = row.getValue("risk") as string
-      return (
-        <Badge 
-          className={
-            risk === "High" ? "bg-red-500 hover:bg-red-600" :
-            risk === "Limited" ? "bg-yellow-500 hover:bg-yellow-600" :
-            "bg-green-500 hover:bg-green-600"
-          }
-        >
-          {risk}
-        </Badge>
-      )
-    }
-  },
-  {
-    accessorKey: "created_at",
-    header: "Created",
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"))
-      return date.toLocaleDateString()
-    }
-  }
-]
 
 async function getModels(): Promise<Model[]> {
   try {
@@ -80,10 +41,7 @@ export async function ModelsTable() {
 
   return (
     <ErrorBoundary>
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">AI Models</h2>
-        <DataTable columns={columns} data={models} />
-      </div>
+      <ModelsTableClient models={models} />
     </ErrorBoundary>
   )
 }
