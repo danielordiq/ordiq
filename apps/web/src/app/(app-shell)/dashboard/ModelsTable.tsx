@@ -44,42 +44,24 @@ async function getModels(): Promise<Model[]> {
   }))
 }
 
-interface ModelsTableProps {
-  search?: string;
-}
-
-export async function ModelsTable({ search }: ModelsTableProps = {}) {
+export async function ModelsTable() {
   try {
     const models = await getModels()
-
-    // Filter models based on search term
-    const filteredModels = search 
-      ? models.filter(model => 
-          model.name.toLowerCase().includes(search.toLowerCase()) ||
-          model.version.toLowerCase().includes(search.toLowerCase()) ||
-          model.risk.toLowerCase().includes(search.toLowerCase())
-        )
-      : models
 
     return (
       <ErrorBoundary>
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">AI Models</h2>
-            <p className="text-sm text-gray-500">{filteredModels.length} models found</p>
-          </div>
-          <DataTable columns={columns} data={filteredModels} />
+          <h2 className="text-xl font-semibold">AI Models</h2>
+          <DataTable columns={columns} data={models} />
         </div>
       </ErrorBoundary>
     )
   } catch (error) {
-    console.error('Error loading models:', error)
+    console.error('Error in ModelsTable:', error)
     return (
-      <ErrorBoundary>
-        <div className="text-center p-8">
-          <p className="text-red-600">Failed to load models. Please try again later.</p>
-        </div>
-      </ErrorBoundary>
+      <div className="text-red-500">
+        Error loading models: {error instanceof Error ? error.message : 'Unknown error'}
+      </div>
     )
   }
 }
