@@ -1,46 +1,57 @@
-
 'use client'
 
-import { Component, ReactNode } from 'react'
+import React from 'react'
 
-interface Props {
-  children: ReactNode
-  fallback?: ReactNode
-}
-
-interface State {
+interface ErrorBoundaryState {
   hasError: boolean
   error?: Error
 }
 
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+interface ErrorBoundaryProps {
+  children: React.ReactNode
+  fallback?: React.ReactNode
+}
+
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false }
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo)
   }
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="text-center py-12">
-          <h2 className="text-lg font-semibold text-gray-900">Something went wrong</h2>
-          <p className="text-gray-600 mt-2">
-            {this.state.error?.message || 'An unexpected error occurred'}
-          </p>
-          <button
-            onClick={() => this.setState({ hasError: false })}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Try again
-          </button>
+      if (this.props.fallback) {
+        return this.props.fallback
+      }
+
+      return (
+        <div className="rounded-md bg-red-50 p-4">
+          <div className="flex">
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">
+                Something went wrong
+              </h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>An error occurred while rendering this component.</p>
+                {process.env.NODE_ENV === 'development' && this.state.error && (
+                  <pre className="mt-2 text-xs bg-red-100 p-2 rounded">
+                    {this.state.error.message}
+                  </pre>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )
     }

@@ -1,21 +1,20 @@
-import { StepContent } from './StepContent'
-import { WizardProvider } from '../../WizardProvider'
 
 interface Props {
   params: Promise<{ step: string }>
 }
 
-export default async function StepPage({ params }: Props) {
-  const { step } = await params
-  const stepNumber = parseInt(step)
-
-  if (stepNumber < 1 || stepNumber > 5) {
-    return <div>Invalid step</div>
-  }
-
+export default async function AssessmentStepPage({ params }: Props) {
+  const { step } = await params;
+  
   return (
-    <WizardProvider>
-      <StepContent step={stepNumber} />
-    </WizardProvider>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Assessment Step {step}</h1>
+        <p className="text-gray-600">Complete this step to continue your assessment</p>
+      </div>
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <p className="text-gray-600">Assessment step {step} content coming soon...</p>
+      </div>
+    </div>
   )
 }
