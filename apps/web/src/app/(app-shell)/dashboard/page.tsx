@@ -1,7 +1,7 @@
 
 import { ModelsTable } from './ModelsTable'
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
