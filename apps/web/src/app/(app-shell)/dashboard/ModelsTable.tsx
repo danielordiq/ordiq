@@ -1,46 +1,75 @@
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/supabase'
+
+"use client"
+
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { DataTable } from '@/components/ui/data-table'
-import { columns } from '@/components/ui/columns'
+import { Badge } from '@/components/ui/badge'
+import { ColumnDef } from '@tanstack/react-table'
+import { createClient } from '@/lib/supa'
 
-type Model = {
+interface Model {
   id: string
   name: string
   version: string
-  risk: "High" | "Limited" | "Minimal"
-  last_run: string
+  risk: string
+  created_at: string
 }
 
-async function getModels(): Promise<Model[]> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('Missing Supabase environment variables');
-    return [];
+const columns: ColumnDef<Model>[] = [
+  {
+    accessorKey: "name",
+    header: "Model Name",
+  },
+  {
+    accessorKey: "version", 
+    header: "Version",
+  },
+  {
+    accessorKey: "risk",
+    header: "Risk Level",
+    cell: ({ row }) => {
+      const risk = row.getValue("risk") as string
+      return (
+        <Badge 
+          className={
+            risk === "High" ? "bg-red-500 hover:bg-red-600" :
+            risk === "Limited" ? "bg-yellow-500 hover:bg-yellow-600" :
+            "bg-green-500 hover:bg-green-600"
+          }
+        >
+          {risk}
+        </Badge>
+      )
+    }
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("created_at"))
+      return date.toLocaleDateString()
+    }
   }
+]
 
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey)
-
-  const { data, error } = await supabase
+async function getModels(): Promise<Model[]> {
+  const supa = createClient()
+  const { data, error } = await supa
     .from('assessments')
-    .select('id, created_at, tier, user_id, matched_key')
-    .order('created_at', { ascending: false, nullsFirst: false })
+    .select('*')
+    .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Supabase error:', error)
-    throw error
+    console.error('Error fetching models:', error)
+    return []
   }
 
-  // Transform assessment data to model format
-  return (data || []).map((assessment, index) => ({
-    id: assessment.id.toString(),
-    name: `Model ${index + 1}`,
-    version: '1.0.0',
-    risk: (assessment.tier === 'High' ? 'High' : 
-           assessment.tier === 'Limited' ? 'Limited' : 'Minimal') as "High" | "Limited" | "Minimal",
-    last_run: assessment.created_at || new Date().toISOString()
+  return (data || []).map(assessment => ({
+    id: assessment.id,
+    name: assessment.matched_key || 'Unknown',
+    version: '1.0',
+    risk: assessment.tier || 'Unknown',
+    created_at: assessment.created_at
   }))
 }
 
