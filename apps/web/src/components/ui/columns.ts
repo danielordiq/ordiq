@@ -1,4 +1,6 @@
 
+"use client";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 
@@ -10,7 +12,7 @@ type Model = {
   last_run: string;
 };
 
-function getRiskBadgeVariant(risk: string) {
+function getRiskBadgeVariant(risk: string): "destructive" | "secondary" | "default" {
   switch (risk) {
     case "High":
       return "destructive";
@@ -27,7 +29,7 @@ export const columns: ColumnDef<Model>[] = [
     header: "Name",
   },
   {
-    accessorKey: "version",
+    accessorKey: "version", 
     header: "Version",
   },
   {
@@ -51,7 +53,7 @@ export const columns: ColumnDef<Model>[] = [
   },
   {
     accessorKey: "last_run",
-    header: "Last Run",
+    header: "Last Run", 
     cell: ({ row }) => {
       const date = new Date(row.getValue("last_run"));
       return date.toLocaleDateString();
