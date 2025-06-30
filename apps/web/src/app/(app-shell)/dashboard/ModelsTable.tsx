@@ -53,44 +53,40 @@ const columns: ColumnDef<Model>[] = [
 ]
 
 async function getModels(): Promise<Model[]> {
-  const supa = createClient()
-  const { data, error } = await supa
-    .from('assessments')
-    .select('*')
-    .order('created_at', { ascending: false })
+  try {
+    const supa = createClient()
+    const { data, error } = await supa
+      .from('assessments')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching models:', error)
+    if (error) {
+      console.error('Error fetching models:', error)
+      return []
+    }
+
+    return (data || []).map(assessment => ({
+      id: assessment.id,
+      name: assessment.matched_key || 'Unknown',
+      version: '1.0',
+      risk: assessment.tier || 'Unknown',
+      created_at: assessment.created_at
+    }))
+  } catch (error) {
+    console.error('Error in getModels:', error)
     return []
   }
-
-  return (data || []).map(assessment => ({
-    id: assessment.id,
-    name: assessment.matched_key || 'Unknown',
-    version: '1.0',
-    risk: assessment.tier || 'Unknown',
-    created_at: assessment.created_at
-  }))
 }
 
 export async function ModelsTable() {
-  try {
-    const models = await getModels()
+  const models = await getModels()
 
-    return (
-      <ErrorBoundary>
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">AI Models</h2>
-          <DataTable columns={columns} data={models} />
-        </div>
-      </ErrorBoundary>
-    )
-  } catch (error) {
-    console.error('Error in ModelsTable:', error)
-    return (
-      <div className="text-red-500">
-        Error loading models: {error instanceof Error ? error.message : 'Unknown error'}
+  return (
+    <ErrorBoundary>
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">AI Models</h2>
+        <DataTable columns={columns} data={models} />
       </div>
-    )
-  }
+    </ErrorBoundary>
+  )
 }
