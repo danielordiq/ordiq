@@ -5,7 +5,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { DataTable } from '@/components/ui/data-table'
 import { Badge } from '@/components/ui/badge'
 import { ColumnDef } from '@tanstack/react-table'
-import { createClient } from '@/lib/supa'
+import { supabase as createClient } from '@/lib/supa'
 
 interface Model {
   id: string
