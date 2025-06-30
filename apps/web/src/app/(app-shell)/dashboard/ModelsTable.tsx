@@ -29,9 +29,22 @@ async function getAssessments(): Promise<Assessment[]> {
   return data || []
 }
 
-export async function ModelsTable() {
+interface ModelsTableProps {
+  search?: string;
+}
+
+export async function ModelsTable({ search }: ModelsTableProps) {
   try {
     const assessments = await getAssessments()
+    
+    // Filter assessments based on search term
+    const filteredAssessments = search 
+      ? assessments.filter(assessment => 
+          assessment.matched_key?.toLowerCase().includes(search.toLowerCase()) ||
+          assessment.tier?.toLowerCase().includes(search.toLowerCase()) ||
+          assessment.user_id?.toLowerCase().includes(search.toLowerCase())
+        )
+      : assessments
 
     return (
       <ErrorBoundary>
@@ -47,7 +60,7 @@ export async function ModelsTable() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {assessments.map((assessment) => (
+              {filteredAssessments.map((assessment) => (
                 <tr key={assessment.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">{assessment.id}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">
