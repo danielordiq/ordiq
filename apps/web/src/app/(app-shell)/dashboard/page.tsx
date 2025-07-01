@@ -1,5 +1,5 @@
 
-import { ModelsTable } from './ModelsTable'
+import ModelsTable from './ModelsTable'
 
 export default async function DashboardPage() {
   return (
