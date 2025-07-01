@@ -19,3 +19,7 @@ nixpkgs = ["wkhtmltopdf"]
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[deployment]
+run = ["sh", "-c", "cd apps/web && pnpm start"]
+build = ["sh", "-c", "cd apps/web && pnpm install && pnpm run build"]

@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useDebounce } from "@/components/useDebounce";
+
+// 👇 TypeScript doesn’t know this is an RSC – tell it to ignore
+// @ts-expect-error - ModelsTable is a Server Component
 import { ModelsTable } from "./ModelsTable";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
