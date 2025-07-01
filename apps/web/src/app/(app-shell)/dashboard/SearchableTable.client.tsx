@@ -23,7 +23,7 @@ export default function SearchableTable() {
       />
 
       <ErrorBoundary>
-        <ModelsTable search={debounced} />
+        <ModelsTable />
       </ErrorBoundary>
     </>
   )
