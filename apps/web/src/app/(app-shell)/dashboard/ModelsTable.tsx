@@ -35,8 +35,7 @@ async function getModels(): Promise<Model[]> {
     return []
   }
 }
-
-export async function ModelsTable() {
+export default async function ModelsTable(/* … */) { … }
   const models = await getModels()
 
   return (
